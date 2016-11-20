@@ -85,7 +85,7 @@ public class BuyProductionMem implements Runnable {
 		// 缓冲写出流
 		BufferedWriter bw = null;
 		try {
-			bw = new BufferedWriter(new FileWriter(path + "/resultRedis.txt", true));
+			bw = new BufferedWriter(new FileWriter(path + "/resultMem.txt", true));
 			bw.write(str);
 			bw.newLine();
 			bw.flush();
