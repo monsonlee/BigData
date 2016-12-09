@@ -1,5 +1,8 @@
 package mxlee.ms;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -11,18 +14,21 @@ import redis.clients.jedis.JedisPoolConfig;
  *
  */
 public class RedisUtil {
-	// 私有化构造方法
+	protected static Logger logger = LoggerFactory.getLogger(JedisUtil.class);
+	public static final String HOST = "127.0.0.1";
+	public static final int PORT = 6379;
+
 	private RedisUtil() {
 	}
 
 	private static JedisPool jedisPool = null;
 
 	/**
-	 * 获得连接
+	 * 初始化JedisPool
 	 * 
 	 * @return
 	 */
-	public static synchronized JedisPool getJedis() {
+	private static void initialPool() {
 
 		if (jedisPool == null) {
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
@@ -31,22 +37,68 @@ public class RedisUtil {
 			// 连接池创建的最大连接数
 			jedisPoolConfig.setMaxTotal(500);
 			// 设置创建连接的超时时间
-			jedisPoolConfig.setMaxWaitMillis(1000 * 5);
+			jedisPoolConfig.setMaxWaitMillis(1000 * 50);
 			// 表示从连接池中获取连接时，先测试连接是否可用
 			jedisPoolConfig.setTestOnBorrow(true);
-			jedisPool = new JedisPool(jedisPoolConfig, "192.168.1.104", 6379);
+			jedisPool = new JedisPool(jedisPoolConfig, HOST, PORT);
 		}
 
-		return jedisPool;
 	}
 
 	/**
-	 * 返回连接
+	 * 在多线程环境同步初始化
+	 */
+	private static synchronized void poolInit() {
+		if (jedisPool == null) {
+			initialPool();
+		}
+	}
+
+	/**
+	 * 同步获取Jedis实例
+	 * 
+	 * @return Jedis
+	 */
+	public synchronized static Jedis getJedis() {
+		if (jedisPool == null) {
+			poolInit();
+		}
+		Jedis jedis = null;
+		try {
+			if (jedisPool != null) {
+				jedis = jedisPool.getResource();
+			}
+		} catch (Exception e) {
+			logger.error("获取jedis出错: " + e);
+		} finally {
+			returnResource(jedis);
+		}
+		return jedis;
+	}
+
+	/**
+	 * 释放jedis资源
 	 * 
 	 * @param jedis
 	 */
 	public static void returnResource(Jedis jedis) {
-		jedis.close();
+		if (jedis != null && jedisPool != null) {
+			// Jedis3.0之后，returnResource遭弃用，官方重写了close方法
+			// jedisPool.returnResource(jedis);
+			jedis.close();
+		}
+	}
+
+	/**
+	 * 释放jedis资源
+	 * 
+	 * @param jedis
+	 */
+	public static void returnBrokenJedis(Jedis jedis) {
+		if (jedis != null && jedisPool != null) {
+			jedisPool.returnBrokenResource(jedis);
+		}
+		jedis = null;
 	}
 
 }
