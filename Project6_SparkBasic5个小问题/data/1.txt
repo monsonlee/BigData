@@ -1,0 +1,5 @@
+zookeeper kafka storm
+hdfs zookeeper flume sqoop
+hdfs kafka flume storm
+hdfs hive zookeeper sqoop
+hdfs kafka flume zookeeper

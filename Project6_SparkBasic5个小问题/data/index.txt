@@ -1,0 +1,9 @@
+﻿cx1|a,b,c,d,e,f
+cx2|c,d,e,f
+cx3|a,b,c,f
+cx4|a,b,c,d,e,f
+cx5|a,b,e,f
+cx6|a,b,c,d
+cx7|a,b,c,f
+cx8|d,e,f
+cx9|b,c,d,e,f
