@@ -22,7 +22,6 @@ public class HBaseUtil {
         Configuration conf = HBaseConfiguration.create();
         conf.set("hbase.zookeeper.quorum", "slave1,slave2,slave3");
         conf.set("hbase.zookeeper.property.clientPort", "2181");
-        ConnectionFactory.createConnection(conf);
         return ConnectionFactory.createConnection(conf);
     }
 
