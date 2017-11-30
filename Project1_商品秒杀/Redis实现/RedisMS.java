@@ -5,14 +5,15 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import my.RedisUtil;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 /**
  * Redis秒杀主程序
- * 
+ *
  * @author mxlee
- * 
+ *
  */
 public class RedisMS {
 
@@ -33,7 +34,7 @@ public class RedisMS {
 
 	/**
 	 * 为Redis数据库中的商品赋值
-	 * 
+	 *
 	 * @param arr
 	 *            String 抢购商品数组
 	 * @param num
@@ -42,7 +43,7 @@ public class RedisMS {
 	private static void assignment(String[] arr, int num, JedisPool jedisPool) {
 
 		// 获得连接
-		Jedis jedis = jedisPool.getResource();
+		JedisPool jedisPool = RedisUtil.poolInit();
 		boolean flag = false;
 
 		for (int i = 0; i < arr.length; i++) {
@@ -53,7 +54,7 @@ public class RedisMS {
 
 	/**
 	 * 抢购开始
-	 * 
+	 *
 	 * @param arr
 	 *            String 抢购商品数组
 	 * @param threadNum
