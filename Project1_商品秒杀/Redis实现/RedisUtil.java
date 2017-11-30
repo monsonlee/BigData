@@ -9,7 +9,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * Redis工具类
- * 
+ *
  * @author mxlee
  *
  */
@@ -25,7 +25,7 @@ public class RedisUtil {
 
 	/**
 	 * 初始化JedisPool
-	 * 
+	 *
 	 * @return
 	 */
 	private static void initialPool() {
@@ -48,20 +48,21 @@ public class RedisUtil {
 	/**
 	 * 在多线程环境同步初始化
 	 */
-	private static synchronized void poolInit() {
+	public static synchronized JedisPool poolInit() {
 		if (jedisPool == null) {
 			initialPool();
 		}
+		return jedisPool;
 	}
 
 	/**
 	 * 同步获取Jedis实例
-	 * 
+	 *
 	 * @return Jedis
 	 */
 	public synchronized static Jedis getJedis() {
 		if (jedisPool == null) {
-			poolInit();
+			jedisPool = poolInit();
 		}
 		Jedis jedis = null;
 		try {
@@ -78,7 +79,7 @@ public class RedisUtil {
 
 	/**
 	 * 释放jedis资源
-	 * 
+	 *
 	 * @param jedis
 	 */
 	public static void returnResource(Jedis jedis) {
@@ -91,7 +92,7 @@ public class RedisUtil {
 
 	/**
 	 * 释放jedis资源
-	 * 
+	 *
 	 * @param jedis
 	 */
 	public static void returnBrokenJedis(Jedis jedis) {
